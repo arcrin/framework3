@@ -18,26 +18,26 @@ async def task_func2(task3: bool | None=None, task6: bool | None=None):
     return True
 
 def task_func3(task5: bool | None=None) -> int:
-    result = fib(30)
+    result = fib(40)
     print(f"Task 3: calculated fib(30) with task5 result {task5}")
     return result
 
 async def task_func4(task5: bool | None=None):
-    await asyncio.sleep(1)    
+    await asyncio.sleep(3)    
     print(f'Executed task4 with task5 result {task5}')
     return True
 
 async def task_func5():
-    await asyncio.sleep(1)    
+    await asyncio.sleep(5)    
     print('Executed task5')
     return True
 
 async def task_func6(task7: bool | None=None):
-    await asyncio.sleep(1)    
+    await asyncio.sleep(3)    
     print(f'Executed task6 with task7 result {task7}')
     return True
 
 async def task_func7(): 
-    await asyncio.sleep(1)   
+    await asyncio.sleep(10)   
     print("Executed task7")
     return True
