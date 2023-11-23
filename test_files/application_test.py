@@ -1,20 +1,20 @@
 from application.dependency_graph import Node
 from util.dag_vis import draw_graph
-from util.async_timing import async_timed
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from time import sleep
 from sample_profile.scripts import *
+from concurrent.futures import Future
+from typing import Dict, Any
+from util.timing_vis import plot_task_timing
 import asyncio
 
 
 # Create some nodes
-node1 = Node("1", task_func1)
-node2 = Node("2", task_func2)
-node3 = Node("3", task_func3)
-node4 = Node("4", task_func4)
-node5 = Node("5", task_func5)
-node6 = Node("6", task_func6)
-node7 = Node("7", task_func7)
+node1 = Node("task1", task_func1)
+node2 = Node("task2", task_func2)
+node3 = Node("task3", task_func3)
+node4 = Node("task4", task_func4)
+node5 = Node("task5", task_func5)
+node6 = Node("task6", task_func6)
+node7 = Node("task7", task_func7)
 
 # Add dependencies
 node1.add_dependency(node2)
@@ -30,16 +30,12 @@ nodes = [node1, node2, node3, node4, node5, node6, node7]
 # Draw the graph
 # draw_graph(node1)
 
-async def execute_task(node: Node):
-    if asyncio.iscoroutinefunction(node.task):
-        await node.task()
-        node.clear()
-    else:
-        with ProcessPoolExecutor() as executor:
-            await asyncio.get_running_loop().run_in_executor(executor, node.task)
-            node.clear()
-
+async def execute_task(node: Node, results: Dict[str, Future[Any]]):
+    result = await node.execute(results)
+    results[node.name].set_result(result)
 async def main():
+    # Create a dictionary to store the Future of each task
+    results: Dict[str, Future[Any]] = {node.name: Future() for node in nodes}
     # Create a queue for tasks that are ready to execute
     ready_to_execute_queue: asyncio.Queue[Node] = asyncio.Queue()
 
@@ -49,21 +45,29 @@ async def main():
             for node in nodes: 
                 if node.ready_to_execute():
                     await ready_to_execute_queue.put(node)
-                    nodes.remove(node)
+                    node.mark_as_executing()
             await asyncio.sleep(0.1)
+        print("check_and_enqueue complete")
+        return True
 
     # Start executing tasks from the queue
     async def execute_from_queue():
         while True:
+            if ready_to_execute_queue.empty() and all(node.cleared for node in nodes):
+                break
             node = await ready_to_execute_queue.get()
-            asyncio.create_task(execute_task(node))
+            asyncio.create_task(execute_task(node, results))
             ready_to_execute_queue.task_done()
             await asyncio.sleep(1)
+        print("execute_from_queue complete")
+        return True
 
     check_and_enqueue_task = asyncio.create_task(check_and_enqueue())
     execution_task = asyncio.create_task(execute_from_queue())
 
     await asyncio.gather(check_and_enqueue_task, execution_task)
+    print("Gather complete")
+    plot_task_timing()
 
 if __name__ == "__main__":
     asyncio.run(main())

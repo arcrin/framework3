@@ -1,5 +1,10 @@
-from typing import Set, Callable, Any
+from typing import Set, Callable, Any, Dict, Optional
 from enum import Enum
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import Future
+from functools import partial
+from util.async_timing import async_timed
+import asyncio
 
 
 class ExecutionStatus(Enum):
@@ -17,6 +22,7 @@ class Node:
         self.dependencies: Set['Node'] = set()
         self.dependents: Set['Node'] = set()
         self.execution_status: ExecutionStatus = ExecutionStatus.TO_EXECUTE
+        self.execute = async_timed(self.name)(self.execute)
 
     def __str__(self) -> str:
         return self.name
@@ -44,8 +50,30 @@ class Node:
             self.dependencies.discard(dependency)
             dependency.dependents.discard(self)
 
-    def clear(self):
+    async def execute(self, shared_result: Optional[Dict[str, Future[Any]]]=None):
+        if shared_result:
+            dependency_results = {dependency.name: shared_result[dependency.name].result() for dependency in self.dependencies}
+        else:
+            dependency_results = {}
+            
+        if asyncio.iscoroutinefunction(self.task):
+            result = await self.task(**dependency_results)
+        else:
+            with ProcessPoolExecutor() as executor:
+                partial_func = partial(self.task, **dependency_results)
+                result = await asyncio.get_running_loop().run_in_executor(executor, partial_func)
         self.execution_status = ExecutionStatus.EXECUTED
+        return result
+
+
+    def mark_as_executed(self):
+        self.execution_status = ExecutionStatus.EXECUTED
+
+    def mark_as_executing(self):
+        self.execution_status = ExecutionStatus.EXECUTING
+
+    def mark_as_to_execute(self):
+        self.execution_status = ExecutionStatus.TO_EXECUTE
 
     def ready_to_execute(self) -> bool:
         return all(dependency.cleared for dependency in self.dependencies) and self.execution_status == ExecutionStatus.TO_EXECUTE
