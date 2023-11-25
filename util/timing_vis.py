@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
-import datetime
 from util.async_timing import task_timing
+import matplotlib.pyplot as plt
+import os
 
 # fig, ax = plt.subplots()
 
@@ -34,5 +34,4 @@ def plot_task_timing():
     ax.set_title("Function Execution Timeline")
 
     plt.savefig('function_execution_timeline.pdf')
-    # plt.show()
-    
+    os.startfile('function_execution_timeline.pdf')

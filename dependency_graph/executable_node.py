@@ -4,7 +4,6 @@ from typing import Callable, Any, Optional, Dict
 from util.async_timing import async_timed
 from concurrent.futures import ProcessPoolExecutor, Future
 from functools import partial
-from application.TAGApplication import TAGApplication
 import asyncio
 
 
