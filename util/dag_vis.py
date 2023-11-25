@@ -1,5 +1,5 @@
 from graphviz import Digraph
-from application.dependency_graph import Node
+from dependency_graph.node import Node
 from typing import Set
 
 

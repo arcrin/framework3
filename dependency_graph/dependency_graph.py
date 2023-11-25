@@ -50,49 +50,22 @@ class Node:
             self.dependencies.discard(dependency)
             dependency.dependents.discard(self)
 
-    # async def execute(self, shared_result: Optional[Dict[str, Future[Any]]]=None):
-    #     if shared_result:
-    #         dependency_results = {dependency.name: shared_result[dependency.name].result() for dependency in self.dependencies}
-    #     else:
-    #         dependency_results = {}
+    async def execute(self, shared_result: Optional[Dict[str, Future[Any]]]=None):
+        if shared_result:
+            dependency_results = {dependency.name: shared_result[dependency.name].result() for dependency in self.dependencies}
+        else:
+            dependency_results = {}
             
-    #     if asyncio.iscoroutinefunction(self.task):
-    #         result = await self.task(**dependency_results)
-    #     else:
-    #         with ProcessPoolExecutor() as executor:
-    #             partial_func = partial(self.task, **dependency_results)
-    #             result = await asyncio.get_running_loop().run_in_executor(executor, partial_func)
-    #     self.execution_status = ExecutionStatus.EXECUTED
-
-    #     return result
-    
-    # async def execute(self, shared_result: Optional[Dict[str, Future[Any]]]=None):
-    #     if shared_result:
-    #         dependency_results = {dependency.name: shared_result[dependency.name].result() for dependency in self.dependencies}
-    #     else:
-    #         dependency_results = {}
-            
-    #     if asyncio.iscoroutinefunction(self.task):
-    #         result = await self.task(**dependency_results)
-    #     else:
-    #         with ProcessPoolExecutor() as executor:
-    #             partial_func = partial(self.task, **dependency_results)
-    #             result = await asyncio.get_running_loop().run_in_executor(executor, partial_func)
-    #     self.execution_status = ExecutionStatus.EXECUTED
-
-    #     return result
-    
-    async def execute(self):
         if asyncio.iscoroutinefunction(self.task):
-            result = await self.task()
+            result = await self.task(**dependency_results)
         else:
             with ProcessPoolExecutor() as executor:
-                result = await asyncio.get_running_loop().run_in_executor(executor, self.task)
+                partial_func = partial(self.task, **dependency_results)
+                result = await asyncio.get_running_loop().run_in_executor(executor, partial_func)
         self.execution_status = ExecutionStatus.EXECUTED
 
         return result
-
-
+    
     def mark_as_executed(self):
         self.execution_status = ExecutionStatus.EXECUTED
 
