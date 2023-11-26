@@ -24,5 +24,6 @@ nodes = [node1, node2, node3, node4, node5, node6, node7]
 
 app = TAGApplication()
 app.load_nodes(nodes)
+app.load_components()
 asyncio.run(app.run())
 app.analysis()

@@ -6,9 +6,12 @@ from sample_profile.scripts import *
 from concurrent.futures import Future
 from typing import Dict, Any, List
 from util.timing_vis import plot_task_timing
+from producer.executable_node_enqueuer import ExecutableNodeEnqueuer
+from consumer.executable_node_dequeuer import ExecutableNodeDequeuer
 import asyncio
 
 
+# TODO: now I need to handle failures and errors from nodes
 class TAGApplication:
     def __init__(self):
         self.executable_task_queue: asyncio.Queue[Node] = asyncio.Queue()
@@ -25,37 +28,15 @@ class TAGApplication:
         self._primary_node = nodes[0]
         self.shared_result_space = {node.name: Future() for node in nodes}
 
-    async def enqueue_executable_tasks(self):
-        while any(not node.executed for node in self.executalbe_nodes):
-            for node in self.executalbe_nodes:
-                if node.ready_to_execute():
-                    await self.executable_task_queue.put(node)
-                    print(f'{node.name} queued')
-                    node.mark_as_executing()
-            await asyncio.sleep(0.1)
-        await self.executable_task_queue.put(self.sentinel_node)
-        print("enqueue_executable_tasks complete")
-
-    async def dequeue_and_execute_executable(self):
-        while True:
-            node = await self.executable_task_queue.get()
-            if isinstance(node, ExecutableNode):
-                asyncio.create_task(self.execute_task(node))
-            elif isinstance(node, SentinelNode):
-                break
-            self.executable_task_queue.task_done()
-            await asyncio.sleep(0.1)
-        print("dequeue_and_execute_executable complete")
-
-
-    async def execute_task(self, node: ExecutableNode):
-        node_result = await node.execute(self.shared_result_space)
-        self.shared_result_space[node.name].set_result(node_result)
+    def load_components(self):
+        self._executable_node_enqueuer = ExecutableNodeEnqueuer(self.executable_task_queue, self.executalbe_nodes)
+        self._executable_node_dequeuer = ExecutableNodeDequeuer(self.executable_task_queue, self.shared_result_space)
 
     async def run(self):
-        enqueue_task = asyncio.create_task(self.enqueue_executable_tasks()) 
-        dequeue_task = asyncio.create_task(self.dequeue_and_execute_executable())
-        await asyncio.gather(enqueue_task, dequeue_task)
+        self._executable_node_enqueuer.start()
+        self._executable_node_dequeuer.start()
+        await asyncio.gather(self._executable_node_enqueuer.task, 
+                             self._executable_node_dequeuer.task)
         print("Application stoped")
 
     def analysis(self):
