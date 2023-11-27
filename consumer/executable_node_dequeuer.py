@@ -1,22 +1,24 @@
-from typing import Dict, Any
-from concurrent.futures import Future
 from dependency_graph.executable_node import ExecutableNode
+from dependency_graph.sentinel_node import SentinelNode
 from dependency_graph.node import Node  
 import asyncio
 
 class ExecutableNodeDequeuer:
-    def __init__(self, queue: asyncio.Queue[Node], result_space: Dict[str, Future[Any]]):
-        self._queue = queue
+    def __init__(self, 
+                 task_queue: asyncio.Queue[Node],
+                 result_queue: asyncio.Queue[Node]):
+        self._queue = task_queue
         self.running = False
-        self._result_space = result_space
+        self._result_queue = result_queue
 
     @property
     def task(self):
         return self._task
 
     async def _execute_node(self, node: ExecutableNode):
-        node_result = await node.execute(self._result_space)
-        self._result_space[node.name].set_result(node_result)
+        await node.execute()
+        await self._result_queue.put(node)
+
 
     async def dequeue(self):
         try:
@@ -25,7 +27,11 @@ class ExecutableNodeDequeuer:
                 print(f"Dequeued {node.name}")
                 if isinstance(node, ExecutableNode):
                     asyncio.create_task(self._execute_node(node))
-                self._queue.task_done()
+                    self._queue.task_done()
+                elif isinstance(node, SentinelNode):
+                    self._queue.task_done()
+                    await self._result_queue.put(SentinelNode("EndOfTests"))
+                    break
                 await asyncio.sleep(0.1)
         except asyncio.CancelledError:
             print("Dequeue cancelled")

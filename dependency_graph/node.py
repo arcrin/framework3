@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Set
+from typing import Set, Any
 
 class Node(ABC):
     def __init__(self, name: str):
@@ -16,6 +16,15 @@ class Node(ABC):
     @property
     def name(self) -> str:
         return self._name
+    
+    #TODO: return TestResult type
+    @property
+    def result(self) -> Any:
+        return None
+    
+    @property
+    def exception(self) -> Exception | None:
+        return None
     
     @property
     @abstractmethod

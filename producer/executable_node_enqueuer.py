@@ -1,13 +1,14 @@
 from typing import List
 from dependency_graph.node import Node
 from dependency_graph.executable_node import ExecutableNode
+from dependency_graph.sentinel_node import SentinelNode
 import asyncio
 
 class ExecutableNodeEnqueuer:
     def __init__(self, executable_task_queue: asyncio.Queue[Node], nodes: List[ExecutableNode]):
         self._queue = executable_task_queue
         self._nodes = nodes
-        self.running = False
+        self._running = False
 
     @property
     def task(self):
@@ -22,14 +23,15 @@ class ExecutableNodeEnqueuer:
                         print(f"Enqueued {node.name}")
                         node.mark_as_executing()
                 await asyncio.sleep(0.1)
+            self._queue.put_nowait(SentinelNode("EndOfTests"))
             print("Enqueue stopped")
         except asyncio.CancelledError:
             print("Enqueue cancelled")
     
     def start(self):
-        self.running = True
+        self._running = True
         self._task = asyncio.create_task(self.enqueue())
 
     def stop(self):
-        self.running = False 
+        self._running = False 
         self._task.cancel()
