@@ -1,13 +1,12 @@
-from dependency_graph.executable_node import ExecutableNode
-from dependency_graph.node import Node
-from dependency_graph.sentinel_node import SentinelNode
-from util.dag_vis import draw_graph
-from sample_profile.scripts import *
-from concurrent.futures import Future
-from typing import Dict, Any, List
-from util.timing_vis import plot_task_timing
 from producer.executable_node_enqueuer import ExecutableNodeEnqueuer
 from consumer.executable_node_dequeuer import ExecutableNodeDequeuer
+from dependency_graph.executable_node import ExecutableNode
+from dependency_graph.sentinel_node import SentinelNode
+from dependency_graph.node import Node
+from sample_profile.scripts import *
+from typing import Dict, Any, List
+from util.timing_vis import plot_task_timing
+from util.dag_vis import draw_graph
 import asyncio
 import websockets
 
@@ -17,11 +16,11 @@ class TAGApplication:
     def __init__(self):
         self.executable_task_queue: asyncio.Queue[Node] = asyncio.Queue()
         self.result_process_queue: asyncio.Queue[Node] = asyncio.Queue()
-        self.shared_result_space: Dict[str, Future[Any]] = {}
         self.sentinel_node = SentinelNode("EndOfTests")
         self.executalbe_nodes: List[ExecutableNode] = []
         self.task_timing: List[Dict[str, Any]] = []
         self._primary_node: ExecutableNode
+        self._dag_state_chage = asyncio.Event()
         self.client = None
     
     async def websocket_conn_handler(self, client_websocket, path):
@@ -37,7 +36,6 @@ class TAGApplication:
     def load_nodes(self, nodes: List[ExecutableNode]):
         self.executalbe_nodes = nodes
         self._primary_node = nodes[0]
-        self.shared_result_space = {node.name: Future() for node in nodes}
 
     def load_components(self):
         self._executable_node_enqueuer = ExecutableNodeEnqueuer(self.executable_task_queue, self.executalbe_nodes)
@@ -58,7 +56,7 @@ class TAGApplication:
                     self.result_process_queue.task_done()
                     break
                 print(f"{node.name} result processed")
-                await asyncio.sleep(0.1)
+                # await asyncio.sleep(0.1)
         except asyncio.CancelledError:
             print("Result processing cancelled")
 

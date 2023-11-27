@@ -5,7 +5,9 @@ from dependency_graph.sentinel_node import SentinelNode
 import asyncio
 
 class ExecutableNodeEnqueuer:
-    def __init__(self, executable_task_queue: asyncio.Queue[Node], nodes: List[ExecutableNode]):
+    def __init__(self, 
+                 executable_task_queue: asyncio.Queue[Node], 
+                 nodes: List[ExecutableNode]):
         self._queue = executable_task_queue
         self._nodes = nodes
         self._running = False

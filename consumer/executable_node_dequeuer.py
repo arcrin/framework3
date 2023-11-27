@@ -32,7 +32,7 @@ class ExecutableNodeDequeuer:
                     self._queue.task_done()
                     await self._result_queue.put(SentinelNode("EndOfTests"))
                     break
-                await asyncio.sleep(0.1)
+                # await asyncio.sleep(0.1)
         except asyncio.CancelledError:
             print("Dequeue cancelled")
 

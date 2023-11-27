@@ -18,7 +18,7 @@ node1.add_dependency(node4)
 node4.add_dependency(node5)
 node3.add_dependency(node5)
 node2.add_dependency(node6)
-node6.add_dependency(node7)
+node6.add_dependency(node7) 
 
 nodes = [node1, node2, node3, node4, node5, node6, node7]
 
