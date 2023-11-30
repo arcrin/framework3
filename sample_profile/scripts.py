@@ -44,8 +44,8 @@ async def task_func6(task7: bool | None=None):
     return True
 
 async def task_func7(): 
-    # await asyncio.sleep(10)   
-    # print("Executed task7")
-    # return True
-    await asyncio.sleep(2)
-    raise Exception("Task 7 failed with exception")
+    await asyncio.sleep(10)   
+    print("Executed task7")
+    return True
+    # await asyncio.sleep(2)
+    # raise Exception("Task 7 failed with exception")
