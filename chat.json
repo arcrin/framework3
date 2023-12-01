@@ -22195,6 +22195,7 @@
     {
       "providerRequestId": "a2bc698a-044a-4865-af76-0f57bd4b7444",
       "message": {
+        "text": "/workspace analysi ExecutableNodeEnqueuer and ExecutableNodeDequeuer",
         "parts": [
           {
             "range": {
@@ -22210,8 +22211,7 @@
             "text": "/workspace analysi ExecutableNodeEnqueuer and ExecutableNodeDequeuer",
             "kind": "text"
           }
-        ],
-        "text": "/workspace analysi ExecutableNodeEnqueuer and ExecutableNodeDequeuer"
+        ]
       },
       "response": [
         {
@@ -22291,6 +22291,7 @@
     {
       "providerRequestId": "f1caad0b-4013-4325-9308-6115a055f0a9",
       "message": {
+        "text": "in the enqueuer, I check node.read_to_execute() before adding the node to the queue. This assumes the ready_to_execyte state will not change from this point on. I don't think this assumption is safe. There will be uses cases in which the dependencies of a node will be invalidated and need to be re-executed",
         "parts": [
           {
             "range": {
@@ -22306,8 +22307,7 @@
             "text": "in the enqueuer, I check node.read_to_execute() before adding the node to the queue. This assumes the ready_to_execyte state will not change from this point on. I don't think this assumption is safe. There will be uses cases in which the dependencies of a node will be invalidated and need to be re-executed",
             "kind": "text"
           }
-        ],
-        "text": "in the enqueuer, I check node.read_to_execute() before adding the node to the queue. This assumes the ready_to_execyte state will not change from this point on. I don't think this assumption is safe. There will be uses cases in which the dependencies of a node will be invalidated and need to be re-executed"
+        ]
       },
       "response": [
         {
@@ -22387,6 +22387,7 @@
     {
       "providerRequestId": "a07945b5-410c-481a-896f-f21dc01b50e5",
       "message": {
+        "text": "I understand this implementation. Is there a way to get rid of this redundency?",
         "parts": [
           {
             "range": {
@@ -22402,8 +22403,7 @@
             "text": "I understand this implementation. Is there a way to get rid of this redundency?",
             "kind": "text"
           }
-        ],
-        "text": "I understand this implementation. Is there a way to get rid of this redundency?"
+        ]
       },
       "response": [
         {
@@ -22483,6 +22483,7 @@
     {
       "providerRequestId": "046a91bc-6e84-41d0-90a0-be0d04db4d18",
       "message": {
+        "text": "well, in this case, you are simply putting all jobs on the queue, without a specific order. This leads to the requeue operation in the dequeuer.",
         "parts": [
           {
             "range": {
@@ -22498,8 +22499,7 @@
             "text": "well, in this case, you are simply putting all jobs on the queue, without a specific order. This leads to the requeue operation in the dequeuer.",
             "kind": "text"
           }
-        ],
-        "text": "well, in this case, you are simply putting all jobs on the queue, without a specific order. This leads to the requeue operation in the dequeuer."
+        ]
       },
       "response": [
         {
@@ -22579,6 +22579,7 @@
     {
       "providerRequestId": "f8264099-683d-4a04-8bd2-ff7a50643c0f",
       "message": {
+        "text": "Comparing to these solutions, I think it is easier just to check node readiness at two places",
         "parts": [
           {
             "range": {
@@ -22594,8 +22595,7 @@
             "text": "Comparing to these solutions, I think it is easier just to check node readiness at two places",
             "kind": "text"
           }
-        ],
-        "text": "Comparing to these solutions, I think it is easier just to check node readiness at two places"
+        ]
       },
       "response": [
         {
