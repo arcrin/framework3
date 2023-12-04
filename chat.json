@@ -22671,6 +22671,102 @@
           }
         }
       ]
+    },
+    {
+      "providerRequestId": "8e80e5d1-6aab-44ef-807d-1cf259401814",
+      "message": {
+        "parts": [
+          {
+            "range": {
+              "start": 0,
+              "endExclusive": 522
+            },
+            "editorRange": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 1,
+              "endColumn": 523
+            },
+            "text": "Take a look at the file. I have all the logic of producer and consumers at the top level application. I can see this code gets messy as I add more producers and consumers to this application. Another potential problem with having all implementation at the top level is the difficulty to make changes in the future; new feature request would lead to recompilation of the entire application code. The ideal solution to these is to encapsulate prodcuer and consumers into abstract interfaces and have separate implementation.",
+            "kind": "text"
+          }
+        ],
+        "text": "Take a look at the file. I have all the logic of producer and consumers at the top level application. I can see this code gets messy as I add more producers and consumers to this application. Another potential problem with having all implementation at the top level is the difficulty to make changes in the future; new feature request would lead to recompilation of the entire application code. The ideal solution to these is to encapsulate prodcuer and consumers into abstract interfaces and have separate implementation."
+      },
+      "response": [
+        {
+          "value": "You're absolutely right. Encapsulating the logic of producers and consumers into separate classes can make your code cleaner, easier to manage, and more maintainable. It also makes it easier to add new features or make changes in the future.\n\nHere's a high-level plan for how you might refactor your code:\n\n1. Create a `Producer` interface with a `produce` method.\n2. Create a `Consumer` interface with a `consume` method.\n3. Implement the `Producer` interface in a `NodeProducer` class. The `produce` method should contain the logic for enqueuing executable nodes.\n4. Implement the `Consumer` interface in a `NodeConsumer` class. The `consume` method should contain the logic for dequeuing and executing nodes.\n5. In your `TAGApplication` class, replace the `enqueue_executables`, `dequeue_executables`, and `process_result` methods with instances of `NodeProducer` and `NodeConsumer`.\n6. In the `run` method, create tasks for the `produce` and `consume` methods of your `NodeProducer` and `NodeConsumer` instances.\n\nHere's a rough sketch of what the `Producer` and `Consumer` interfaces and `NodeProducer` and `NodeConsumer` classes might look like:\n\n```python\nfrom abc import ABC, abstractmethod\n\nclass Producer(ABC):\n    @abstractmethod\n    async def produce(self):\n        pass\n\nclass Consumer(ABC):\n    @abstractmethod\n    async def consume(self):\n        pass\n\nclass NodeProducer(Producer):\n    def __init__(self, queue, nodes):\n        self._queue = queue\n        self._nodes = nodes\n\n    async def produce(self):\n        # Logic for enqueuing executable nodes\n\nclass NodeConsumer(Consumer):\n    def __init__(self, queue):\n        self._queue = queue\n\n    async def consume(self):\n        # Logic for dequeuing and executing nodes\n```\n\nNext steps:\n- Implement the `Producer` and `Consumer` interfaces.\n- Implement the `NodeProducer` and `NodeConsumer` classes.\n- Refactor your `TAGApplication` class to use `NodeProducer` and `NodeConsumer`.\n- Test your application to ensure it still works as expected after the changes.",
+          "isTrusted": false,
+          "supportThemeIcons": false,
+          "supportHtml": false
+        }
+      ],
+      "followups": [
+        {
+          "kind": "reply",
+          "message": "How can I encapsulate the logic of producers and consumers into separate classes to improve code organization and maintainability?",
+          "metadata": {
+            "messageId": "8e80e5d1-6aab-44ef-807d-1cf259401814",
+            "suggestionId": "365df4fb-d3d8-47a8-9a31-ff3da262252b",
+            "suggestionType": "Follow-up from model"
+          },
+          "title": "How can I encapsulate the logic of producers and consumers into separate classes to improve code organization and maintainability?"
+        }
+      ],
+      "isCanceled": false,
+      "agent": {
+        "id": "",
+        "metadata": {
+          "description": "",
+          "fullName": "GitHub Copilot",
+          "hasSlashCommands": true,
+          "hasFollowup": true,
+          "isDefault": true
+        }
+      },
+      "usedContext": {
+        "documents": [
+          {
+            "uri": {
+              "$mid": 1,
+              "fsPath": "f:\\Learning\\python\\framework3\\application\\TAGApplication.py",
+              "_sep": 1,
+              "external": "file:///f%3A/Learning/python/framework3/application/TAGApplication.py",
+              "path": "/F:/Learning/python/framework3/application/TAGApplication.py",
+              "scheme": "file"
+            },
+            "version": 1,
+            "ranges": [
+              {
+                "startLineNumber": 76,
+                "startColumn": 1,
+                "endLineNumber": 114,
+                "endColumn": 45
+              }
+            ]
+          }
+        ]
+      },
+      "contentReferences": [
+        {
+          "reference": {
+            "uri": {
+              "$mid": 1,
+              "fsPath": "f:\\Learning\\python\\framework3\\application\\TAGApplication.py",
+              "_sep": 1,
+              "external": "file:///f%3A/Learning/python/framework3/application/TAGApplication.py",
+              "path": "/F:/Learning/python/framework3/application/TAGApplication.py",
+              "scheme": "file"
+            },
+            "range": {
+              "startLineNumber": 76,
+              "startColumn": 1,
+              "endLineNumber": 114,
+              "endColumn": 45
+            }
+          }
+        }
+      ]
     }
   ],
   "providerId": "copilot",
