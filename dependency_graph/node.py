@@ -57,7 +57,7 @@ class Node(ABC):
     def get_top_dependent(self):
         max_dependencies = 0
         top_node = None
-        to_visit = [self]
+        to_visit: list['Node'] = [self] 
         visited: Set['Node'] = set()
 
         while to_visit:
@@ -68,7 +68,7 @@ class Node(ABC):
                 if dependency_count > max_dependencies:
                     max_dependencies = dependency_count
                     top_node = node
-                to_visit.extend(node.dependents)
+                to_visit.extend(list(node.dependents))
         return top_node
         
     def _dfs_dependency(self, visited: Set['Node']):
