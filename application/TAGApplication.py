@@ -3,9 +3,25 @@ from dependency_graph.sentinel_node import SentinelNode
 from util.timing_vis import plot_task_timing
 from dependency_graph.node import Node
 from util.dag_vis import draw_graph
-from sample_profile.scripts import *
 from typing import Dict, Any, List
 import asyncio
+
+# TODO: I am having trouble with how to organize tasks. I have the Node class that allows me to make a dependency tree,
+#  but I still need to manually create the dependencies between tasks. It is fine when it comes to test cases, because
+#  they are defined in a profile class, and the dependencies are defined by whoever writes the test scripts. The process
+#  related tasks are different. They are isolated from the test profile. If a test case is dependent on a process task,
+#  it needs to know what kind of process it is waiting for; or the profile needs to know about it. How do I pass on this
+#  information?
+#  Create process task classes, make these classes awaitable. During profile creation, explicitly define the
+#  dependencies between test cases and process tasks.
+
+# TODO: How are process task objects created? "Load product info" process is initiated by user SN scan.
+#  "load test jig configuration" is initiated inside the profile. I should identify all jobs first.
+#  1. User input: scan SN; pass/fail prompt; other input
+#  2. Get product info from database
+#  3. Load profile: this is tricky. This is could also be the place where test cases are loaded, put on the queue
+#  4. Load test jig configuration. This also happens inside the profile. This is where things get complicated
+#  5. Push final result to mongo. Combine results from all test cases tasks and push them to mongo
 
 class NodeList:
     def __init__(self, nodes_state: asyncio.Event):
