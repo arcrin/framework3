@@ -40,6 +40,14 @@ class TAGApplication:
         self.executalbe_nodes = nodes
         self._primary_node = nodes[0]
 
+    def load_profile(self,):
+        # TODO: how to start a load profile procedure?
+        # 1. download and install profile modeule like we are doing right now. (pip install sample_profile)
+        # 2. import the module
+        # 3. create an instance of this profile module
+        # 4. I wouldn't be able to start adding test cases to the queue
+        pass
+
     async def enqueue_executables(self):
         try:
             while any([not node.executed for node in self.executalbe_nodes]):
